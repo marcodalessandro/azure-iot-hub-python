@@ -14,7 +14,22 @@ from .protocol.models import (
     AuthenticationMechanism,
     DeviceCapabilities,
 )
-from uamqp import TransportType
+
+try:
+    from uamqp import TransportType
+except ImportError:
+    from enum import Enum
+
+    class TransportType(Enum):
+        """Transport type for AMQP connections.
+
+        Mirrors uamqp.TransportType. Only used when uamqp is not installed;
+        C2D messaging (send_c2d_message) requires uamqp and will raise an
+        ImportError if called without it.
+        """
+
+        Amqp = 1
+        AmqpOverWebsocket = 3
 
 
 def _ensure_quoted(etag):
@@ -79,19 +94,25 @@ class IoTHubRegistryManager(object):
             self.protocol = protocol_client(
                 conn_string_auth, "https://" + conn_string_auth["HostName"]
             )
-            self.amqp_svc_client = iothub_amqp_client.IoTHubAmqpClientSharedAccessKeyAuth(
-                conn_string_auth["HostName"],
-                conn_string_auth["SharedAccessKeyName"],
-                conn_string_auth["SharedAccessKey"],
-                transport_type,
-            )
+            try:
+                self.amqp_svc_client = iothub_amqp_client.IoTHubAmqpClientSharedAccessKeyAuth(
+                    conn_string_auth["HostName"],
+                    conn_string_auth["SharedAccessKeyName"],
+                    conn_string_auth["SharedAccessKey"],
+                    transport_type,
+                )
+            except ImportError:
+                pass  # uamqp not installed; send_c2d_message will raise ImportError if called
         else:
             self.protocol = protocol_client(
                 AzureIdentityCredentialAdapter(token_credential), "https://" + host
             )
-            self.amqp_svc_client = iothub_amqp_client.IoTHubAmqpClientTokenAuth(
-                host, token_credential, transport_type=transport_type
-            )
+            try:
+                self.amqp_svc_client = iothub_amqp_client.IoTHubAmqpClientTokenAuth(
+                    host, token_credential, transport_type=transport_type
+                )
+            except ImportError:
+                pass  # uamqp not installed; send_c2d_message will raise ImportError if called
 
     @classmethod
     def from_connection_string(cls, connection_string, transport_type=TransportType.Amqp):
@@ -936,4 +957,11 @@ class IoTHubRegistryManager(object):
 
         :raises: Exception if the Send command is not able to send the message
         """
+        if self.amqp_svc_client is None:
+            raise ImportError(
+                "uamqp is required for AMQP-based C2D messaging but is not installed. "
+                "On ARM macOS (Apple Silicon) it is not installed automatically due to build "
+                "compatibility issues with recent clang versions. Install it separately with: "
+                "pip install azure-iot-hub[amqp]"
+            )
         self.amqp_svc_client.send_message_to_device(device_id, message, properties)
