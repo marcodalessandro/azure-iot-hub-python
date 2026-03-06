@@ -204,16 +204,30 @@ class TestTransportTypeFallback:
         assert hasattr(TransportType, "AmqpOverWebsocket")
 
     @pytest.mark.it("Fallback IntEnum values match uamqp convention")
-    def test_fallback_enum_int_values(self):
-        """Verify our fallback IntEnum has the correct integer values."""
+    def test_fallback_enum_int_values(self, monkeypatch):
+        """Force uamqp ImportError and reload the module to exercise the fallback."""
         from enum import IntEnum
+        import builtins
+        import importlib
+        import azure.iot.hub.iothub_registry_manager as registry_module
 
-        class FallbackTransportType(IntEnum):
-            Amqp = 1
-            AmqpOverWebsocket = 3
+        real_import = builtins.__import__
 
+        def _import_without_uamqp(name, *args, **kwargs):
+            if name == "uamqp":
+                raise ImportError("No module named 'uamqp'")
+            return real_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", _import_without_uamqp)
+        reloaded_module = importlib.reload(registry_module)
+        FallbackTransportType = reloaded_module.TransportType
+
+        assert issubclass(FallbackTransportType, IntEnum)
         assert FallbackTransportType.Amqp == 1
         assert FallbackTransportType.AmqpOverWebsocket == 3
+
+        # Restore original module state
+        importlib.reload(registry_module)
 
     @pytest.mark.it("Default transport_type in from_connection_string is Amqp")
     def test_default_transport_type(self, simulate_no_uamqp):

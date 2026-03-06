@@ -943,7 +943,7 @@ class IoTHubRegistryManager(object):
 
         return self.protocol.modules.invoke_method(device_id, module_id, direct_method_request)
 
-    def send_c2d_message(self, device_id, message, properties={}):
+    def send_c2d_message(self, device_id, message, properties=None):
         """Send a C2D message to a IoTHub Device.
 
         :param str device_id: The name (Id) of the device.
@@ -954,10 +954,7 @@ class IoTHubRegistryManager(object):
         :raises: Exception if the Send command is not able to send the message
         """
         if self.amqp_svc_client is None:
-            raise ImportError(
-                "uamqp is required for AMQP-based C2D messaging but is not installed. "
-                "On ARM macOS (Apple Silicon) it is not installed automatically due to build "
-                "compatibility issues with recent clang versions. Install it separately with: "
-                "pip install azure-iot-hub[amqp]"
-            )
+            raise ImportError(iothub_amqp_client._UAMQP_MISSING_ERROR)
+        if properties is None:
+            properties = {}
         self.amqp_svc_client.send_message_to_device(device_id, message, properties)
