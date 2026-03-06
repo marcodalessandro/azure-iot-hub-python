@@ -9,7 +9,7 @@ import time
 import hashlib
 import hmac
 from uuid import uuid4
-import urllib.parse
+import six.moves.urllib as urllib
 from azure.core.credentials import AccessToken
 
 try:

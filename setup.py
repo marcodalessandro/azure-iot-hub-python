@@ -77,6 +77,7 @@ setup(
     install_requires=[
         "msrest>=0.6.21,<1.0.0",
         "azure-core>=1.10.0,<2.0.0",
+        "six>=1.12.0",
         # uamqp is a C extension that fails to build on ARM macOS (Apple Silicon) with recent
         # clang versions due to stricter type checking. It is excluded from automatic installation
         # on that platform only; all other platforms (Windows, Linux, Intel Mac) get it by default.

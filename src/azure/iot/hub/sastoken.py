@@ -9,7 +9,7 @@ import base64
 import hmac
 import hashlib
 import time
-import urllib.parse
+import six.moves.urllib as urllib
 
 
 class SasTokenError(Exception):
