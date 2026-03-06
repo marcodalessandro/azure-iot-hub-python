@@ -18,12 +18,11 @@ then verify that:
 """
 
 import pytest
-from unittest.mock import patch, MagicMock
 
 from azure.iot.hub.iothub_registry_manager import IoTHubRegistryManager
 from azure.iot.hub import iothub_amqp_client
 
-"""---Constants---"""
+# ---Constants---
 fake_hostname = "beauxbatons.academy-net"
 fake_device_id = "MyPensieve"
 fake_shared_access_key_name = "alohomora"
@@ -124,7 +123,9 @@ class TestRegistryManagerRestOperationsWithoutUamqp:
     @pytest.mark.it("delete_device works without uamqp")
     def test_delete_device(self, manager):
         manager.delete_device(fake_device_id)
-        manager.protocol.devices.delete_identity.assert_called_once()
+        manager.protocol.devices.delete_identity.assert_called_once_with(
+            fake_device_id, '"*"'
+        )
 
     @pytest.mark.it("get_twin works without uamqp")
     def test_get_twin(self, manager):
@@ -201,6 +202,18 @@ class TestTransportTypeFallback:
 
         assert hasattr(TransportType, "Amqp")
         assert hasattr(TransportType, "AmqpOverWebsocket")
+
+    @pytest.mark.it("Fallback IntEnum values match uamqp convention")
+    def test_fallback_enum_int_values(self):
+        """Verify our fallback IntEnum has the correct integer values."""
+        from enum import IntEnum
+
+        class FallbackTransportType(IntEnum):
+            Amqp = 1
+            AmqpOverWebsocket = 3
+
+        assert FallbackTransportType.Amqp == 1
+        assert FallbackTransportType.AmqpOverWebsocket == 3
 
     @pytest.mark.it("Default transport_type in from_connection_string is Amqp")
     def test_default_transport_type(self, simulate_no_uamqp):

@@ -18,9 +18,9 @@ from .protocol.models import (
 try:
     from uamqp import TransportType
 except ImportError:
-    from enum import Enum
+    from enum import IntEnum
 
-    class TransportType(Enum):
+    class TransportType(IntEnum):
         """Transport type for AMQP connections.
 
         Mirrors uamqp.TransportType. Only used when uamqp is not installed;
@@ -94,25 +94,21 @@ class IoTHubRegistryManager(object):
             self.protocol = protocol_client(
                 conn_string_auth, "https://" + conn_string_auth["HostName"]
             )
-            try:
+            if iothub_amqp_client.HAS_UAMQP:
                 self.amqp_svc_client = iothub_amqp_client.IoTHubAmqpClientSharedAccessKeyAuth(
                     conn_string_auth["HostName"],
                     conn_string_auth["SharedAccessKeyName"],
                     conn_string_auth["SharedAccessKey"],
                     transport_type,
                 )
-            except ImportError:
-                pass  # uamqp not installed; send_c2d_message will raise ImportError if called
         else:
             self.protocol = protocol_client(
                 AzureIdentityCredentialAdapter(token_credential), "https://" + host
             )
-            try:
+            if iothub_amqp_client.HAS_UAMQP:
                 self.amqp_svc_client = iothub_amqp_client.IoTHubAmqpClientTokenAuth(
                     host, token_credential, transport_type=transport_type
                 )
-            except ImportError:
-                pass  # uamqp not installed; send_c2d_message will raise ImportError if called
 
     @classmethod
     def from_connection_string(cls, connection_string, transport_type=TransportType.Amqp):
