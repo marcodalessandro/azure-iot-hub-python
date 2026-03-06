@@ -6,10 +6,9 @@
 
 import pytest
 from azure.iot.hub.protocol.models import AuthenticationMechanism, DeviceCapabilities
-from azure.iot.hub.iothub_registry_manager import IoTHubRegistryManager
+from azure.iot.hub.iothub_registry_manager import IoTHubRegistryManager, TransportType
 from azure.iot.hub import iothub_amqp_client
 from azure.iot.hub.protocol.iot_hub_gateway_service_ap_is import IotHubGatewayServiceAPIs
-from uamqp import TransportType
 
 """---Constants---"""
 
