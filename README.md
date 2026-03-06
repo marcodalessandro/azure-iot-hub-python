@@ -57,10 +57,10 @@ The `send_c2d_message` method on `IoTHubRegistryManager` uses the [uamqp](https:
 
 #### Apple Silicon macOS: opting in to C2D messaging
 
-If your Xcode and clang version are compatible, you can install `uamqp` explicitly using the `amqp` extra:
+If your Xcode and clang version are compatible, you can install `uamqp` explicitly using the `uamqp` extra:
 
 ```bash
-pip install azure-iot-hub[amqp]
+pip install azure-iot-hub[uamqp]
 ```
 
 If `uamqp` cannot be built in your environment, all other SDK features (device/module CRUD, twin operations, direct methods, digital twins, jobs, etc.) work without it. Calling `send_c2d_message` without `uamqp` installed raises an `ImportError` with instructions.

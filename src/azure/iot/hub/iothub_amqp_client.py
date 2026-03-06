@@ -22,7 +22,7 @@ except ImportError:
 _UAMQP_MISSING_ERROR = (
     "uamqp is required for AMQP-based C2D messaging but is not installed. "
     "On ARM macOS (Apple Silicon) it is not installed automatically due to build compatibility "
-    "issues with recent clang versions. Install it separately with: pip install azure-iot-hub[amqp]"
+    "issues with recent clang versions. Install it separately with: pip install azure-iot-hub[uamqp]"
 )
 
 default_sas_expiry = 3600
