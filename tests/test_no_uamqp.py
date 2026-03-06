@@ -226,7 +226,8 @@ class TestTransportTypeFallback:
         assert FallbackTransportType.Amqp == 1
         assert FallbackTransportType.AmqpOverWebsocket == 3
 
-        # Restore original module state
+        # Restore original module state: undo monkeypatch first, then reload
+        monkeypatch.setattr(builtins, "__import__", real_import)
         importlib.reload(registry_module)
 
     @pytest.mark.it("Default transport_type in from_connection_string is Amqp")
