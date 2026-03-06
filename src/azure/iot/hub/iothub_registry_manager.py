@@ -83,7 +83,7 @@ class IoTHubRegistryManager(object):
             Default value: None
         :param transport_type: The underlying transport protocol type: Amqp: AMQP over the default TCP transport protocol, it uses port 5671. AmqpOverWebsocket: Amqp over the Web Sockets transport protocol, it uses port 443.
             Default value: Amqp
-        :type transport_type: :class:`uamqp.TransportType`
+        :type transport_type: :class:`TransportType`
 
         :returns: Instance of the IoTHubRegistryManager object.
         :rtype: :class:`azure.iot.hub.IoTHubRegistryManager`
@@ -122,7 +122,7 @@ class IoTHubRegistryManager(object):
             with IoTHub.
         :param transport_type: The underlying transport protocol type: Amqp: AMQP over the default TCP transport protocol, it uses port 5671. AmqpOverWebsocket: Amqp over the Web Sockets transport protocol, it uses port 443.
             Default value: Amqp
-        :type transport_type: :class:`uamqp.TransportType`
+        :type transport_type: :class:`TransportType`
 
         :rtype: :class:`azure.iot.hub.IoTHubRegistryManager`
         """
@@ -141,7 +141,7 @@ class IoTHubRegistryManager(object):
         :type token_credential: :class:`azure.core.TokenCredential`
         :param transport_type: The underlying transport protocol type: Amqp: AMQP over the default TCP transport protocol, it uses port 5671. AmqpOverWebsocket: Amqp over the Web Sockets transport protocol, it uses port 443.
             Default value: Amqp
-        :type transport_type: :class:`uamqp.TransportType`
+        :type transport_type: :class:`TransportType`
 
         :rtype: :class:`azure.iot.hub.IoTHubRegistryManager`
         """
